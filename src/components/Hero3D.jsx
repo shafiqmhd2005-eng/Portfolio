@@ -5,13 +5,24 @@ import { sound } from '../utils/audio';
 export default function Hero3D() {
   const containerRef = useRef(null);
   const [viewMode, setViewMode] = useState('normal'); // 'normal' | 'bus' | 'wireframe'
+  const [activePart, setActivePart] = useState('all'); // 'all', 'esp32', 'solar', 'antenna', 'thrusters'
   const [isDragging, setIsDragging] = useState(false);
   const [webGLSupported, setWebGLSupported] = useState(true);
+
+  // Simple explanations for common people
+  const partExplanations = {
+    all: "Full Satellite Assembly: A complete orbital spacecraft featuring solar panels, communications, and an embedded flight computer.",
+    esp32: "ESP32 Embedded Computer: The main 'brain' of the satellite. It runs the software code and processes all sensor readings.",
+    solar: "Solar Power Wings: Two large folding solar panels that absorb sunlight to generate continuous clean electricity in orbit.",
+    antenna: "High-Gain Dish Antenna: Points toward Earth to send telemetry, sensor data, and pictures back to mission control.",
+    thrusters: "Steering Thruster Nozzles: Tiny gas jets mounted on the corners that gently steer and balance the satellite in space."
+  };
 
   // References to three.js objects for live updates
   const sceneRef = useRef(null);
   const materialsRef = useRef({});
-  const rotationGroupRef = useRef(null);
+  const satelliteGroupRef = useRef(null);
+  const partsRefs = useRef({});
 
   useEffect(() => {
     const container = containerRef.current;
@@ -38,63 +49,87 @@ export default function Hero3D() {
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(0, 0, 7.5);
+    camera.position.set(0, 0.2, 7.8);
 
     // 2. Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.3;
     container.appendChild(renderer.domElement);
 
     // 3. Lighting
-    const ambientLight = new THREE.AmbientLight(0x0f2038, 1.8);
+    const ambientLight = new THREE.AmbientLight(0x0f243e, 2.0);
     scene.add(ambientLight);
 
-    const cyanPointLight = new THREE.PointLight(0x00e5ff, 3, 20);
-    cyanPointLight.position.set(4, 3, 4);
-    scene.add(cyanPointLight);
+    const mainSunLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    mainSunLight.position.set(5, 4, 5);
+    scene.add(mainSunLight);
 
-    const purplePointLight = new THREE.PointLight(0x7c3aed, 2.5, 20);
-    purplePointLight.position.set(-4, -2, 3);
-    scene.add(purplePointLight);
+    const cyanRimLight = new THREE.PointLight(0x00e5ff, 4, 18);
+    cyanRimLight.position.set(4, 2, 3);
+    scene.add(cyanRimLight);
 
-    const rimLight = new THREE.DirectionalLight(0xe0f2fe, 1.2);
-    rimLight.position.set(0, 5, -5);
-    scene.add(rimLight);
+    const purpleBackLight = new THREE.PointLight(0x8b5cf6, 3, 18);
+    purpleBackLight.position.set(-4, -3, 2);
+    scene.add(purpleBackLight);
 
-    // 4. Main Satellite / Embedded Core Model Group
+    const bottomReflector = new THREE.DirectionalLight(0x0284c7, 0.8);
+    bottomReflector.position.set(0, -5, -2);
+    scene.add(bottomReflector);
+
+    // 4. Main Satellite Group
     const satelliteGroup = new THREE.Group();
-    rotationGroupRef.current = satelliteGroup;
+    satelliteGroupRef.current = satelliteGroup;
     scene.add(satelliteGroup);
 
-    // Shared Materials dictionary
+    // --- High-Detail Materials ---
     const materials = {
+      goldFoil: new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        metalness: 0.85,
+        roughness: 0.25,
+      }),
+      darkBody: new THREE.MeshStandardMaterial({
+        color: 0x0c192c,
+        metalness: 0.7,
+        roughness: 0.35,
+      }),
+      titaniumMetal: new THREE.MeshStandardMaterial({
+        color: 0x334155,
+        metalness: 0.9,
+        roughness: 0.2,
+      }),
       pcbSubstrate: new THREE.MeshStandardMaterial({
-        color: 0x07152b,
-        metalness: 0.6,
+        color: 0x061427,
+        metalness: 0.5,
         roughness: 0.3,
       }),
       copperTraces: new THREE.MeshStandardMaterial({
         color: 0x00e5ff,
         emissive: 0x0099bb,
-        emissiveIntensity: 0.6,
+        emissiveIntensity: 0.7,
         roughness: 0.2,
       }),
-      chipPackage: new THREE.MeshStandardMaterial({
-        color: 0x111827,
-        metalness: 0.8,
-        roughness: 0.2,
+      chipShield: new THREE.MeshStandardMaterial({
+        color: 0x94a3b8,
+        metalness: 0.95,
+        roughness: 0.15,
       }),
       goldPins: new THREE.MeshStandardMaterial({
         color: 0xffd700,
+        metalness: 0.95,
+        roughness: 0.1,
+      }),
+      silverCan: new THREE.MeshStandardMaterial({
+        color: 0xe2e8f0,
         metalness: 0.9,
         roughness: 0.1,
       }),
       solarCell: new THREE.MeshStandardMaterial({
-        color: 0x0c2444,
-        roughness: 0.1,
+        color: 0x081e3a,
+        roughness: 0.15,
         metalness: 0.8,
       }),
       solarFrame: new THREE.MeshStandardMaterial({
@@ -102,217 +137,343 @@ export default function Hero3D() {
         metalness: 0.8,
         roughness: 0.4,
       }),
-      glowingCyan: new THREE.MeshBasicMaterial({
-        color: 0x00e5ff,
+      dishReflector: new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        metalness: 0.85,
+        roughness: 0.25,
+        side: THREE.DoubleSide
       }),
-      glowingGreen: new THREE.MeshBasicMaterial({
-        color: 0x10b981,
+      dishGoldMesh: new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        metalness: 0.9,
+        roughness: 0.2,
+        wireframe: true,
       }),
-      glowingAmber: new THREE.MeshBasicMaterial({
-        color: 0xf59e0b,
+      thrusterNozzle: new THREE.MeshStandardMaterial({
+        color: 0x475569,
+        metalness: 0.85,
+        roughness: 0.3,
       }),
+      glowingCyan: new THREE.MeshBasicMaterial({ color: 0x00e5ff }),
+      glowingGreen: new THREE.MeshBasicMaterial({ color: 0x10b981 }),
+      glowingAmber: new THREE.MeshBasicMaterial({ color: 0xf59e0b }),
+      glowingPurple: new THREE.MeshBasicMaterial({ color: 0xa855f7 }),
       orbitalRings: new THREE.MeshBasicMaterial({
         color: 0x00e5ff,
         wireframe: true,
         transparent: true,
-        opacity: 0.35,
-      }),
-      wireframeBlueprint: new THREE.MeshBasicMaterial({
-        color: 0x00e5ff,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.7,
+        opacity: 0.25,
       }),
     };
     materialsRef.current = materials;
 
-    // --- A. Central PCB Chassis ---
-    const pcbGeo = new THREE.BoxGeometry(2.4, 2.4, 0.08);
-    const pcbMesh = new THREE.Mesh(pcbGeo, materials.pcbSubstrate);
-    satelliteGroup.add(pcbMesh);
+    // ==========================================
+    // 1. SATELLITE MAIN OCTAGONAL BUS CHASSIS
+    // ==========================================
+    const busRadius = 1.1;
+    const busHeight = 1.4;
+    const busGeo = new THREE.CylinderGeometry(busRadius, busRadius, busHeight, 8);
+    const busMesh = new THREE.Mesh(busGeo, materials.darkBody);
+    satelliteGroup.add(busMesh);
 
-    // Substrate Edge Bezel
-    const pcbBezelGeo = new THREE.BoxGeometry(2.44, 2.44, 0.04);
-    const pcbBezelMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, roughness: 0.3, metalness: 0.7 });
-    const pcbBezel = new THREE.Mesh(pcbBezelGeo, pcbBezelMat);
-    satelliteGroup.add(pcbBezel);
-
-    // --- B. Central Microcontroller (ESP32 SoC Package) ---
-    const mcuGeo = new THREE.BoxGeometry(0.9, 0.9, 0.12);
-    const mcuMesh = new THREE.Mesh(mcuGeo, materials.chipPackage);
-    mcuMesh.position.z = 0.1;
-    satelliteGroup.add(mcuMesh);
-
-    // MCU Heat-spreader Shield
-    const shieldGeo = new THREE.BoxGeometry(0.65, 0.65, 0.13);
-    const shieldMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.95, roughness: 0.1 });
-    const shieldMesh = new THREE.Mesh(shieldGeo, shieldMat);
-    shieldMesh.position.z = 0.105;
-    satelliteGroup.add(shieldMesh);
-
-    // MCU Pins (around QFN package)
-    const pinGeo = new THREE.BoxGeometry(0.04, 0.1, 0.03);
-    for (let side = 0; side < 4; side++) {
-      for (let p = -3; p <= 3; p++) {
-        const pin = new THREE.Mesh(pinGeo, materials.goldPins);
-        const offset = p * 0.11;
-        if (side === 0) { // Top
-          pin.position.set(offset, 0.48, 0.08);
-        } else if (side === 1) { // Bottom
-          pin.position.set(offset, -0.48, 0.08);
-        } else if (side === 2) { // Left
-          pin.rotation.z = Math.PI / 2;
-          pin.position.set(-0.48, offset, 0.08);
-        } else { // Right
-          pin.rotation.z = Math.PI / 2;
-          pin.position.set(0.48, offset, 0.08);
-        }
-        satelliteGroup.add(pin);
+    // Gold Multi-Layer Insulation (MLI) Thermal Blanket Panels on alternate facets
+    const foilPanelGeo = new THREE.PlaneGeometry(0.8, 1.25);
+    for (let f = 0; f < 8; f++) {
+      if (f % 2 === 0) {
+        const foilPanel = new THREE.Mesh(foilPanelGeo, materials.goldFoil);
+        const angle = (f / 8) * Math.PI * 2;
+        foilPanel.position.set(Math.sin(angle) * (busRadius + 0.01), 0, Math.cos(angle) * (busRadius + 0.01));
+        foilPanel.rotation.y = angle;
+        satelliteGroup.add(foilPanel);
       }
     }
 
-    // --- C. Glowing Circuit Traces on PCB Surface ---
-    const tracePoints = [
-      // Bus traces leading to headers
-      [-0.45, 0.3, 0.05], [-0.85, 0.3, 0.05], [-0.85, 0.8, 0.05], [-1.0, 0.8, 0.05],
-      [0.45, 0.3, 0.05], [0.85, 0.3, 0.05], [0.85, 0.8, 0.05], [1.0, 0.8, 0.05],
-      [-0.45, -0.3, 0.05], [-0.75, -0.3, 0.05], [-0.75, -0.85, 0.05], [-1.0, -0.85, 0.05],
-      [0.45, -0.3, 0.05], [0.75, -0.3, 0.05], [0.75, -0.85, 0.05], [1.0, -0.85, 0.05],
-      [0.2, 0.45, 0.05], [0.2, 0.8, 0.05], [0.5, 0.8, 0.05], [0.5, 1.0, 0.05],
-      [-0.2, -0.45, 0.05], [-0.2, -0.8, 0.05], [-0.5, -0.8, 0.05], [-0.5, -1.0, 0.05],
-    ];
+    // Top and Bottom Structural Deck Rings (Anodized Titanium)
+    const deckRingGeo = new THREE.CylinderGeometry(busRadius + 0.06, busRadius + 0.06, 0.08, 16);
+    const topDeck = new THREE.Mesh(deckRingGeo, materials.titaniumMetal);
+    topDeck.position.y = busHeight / 2;
+    satelliteGroup.add(topDeck);
 
-    const tracesGroup = new THREE.Group();
-    for (let i = 0; i < tracePoints.length; i += 2) {
-      const p1 = new THREE.Vector3(...tracePoints[i]);
-      const p2 = new THREE.Vector3(...tracePoints[i + 1]);
-      const curve = new THREE.LineCurve3(p1, p2);
-      const tubeGeo = new THREE.TubeGeometry(curve, 1, 0.012, 6, false);
-      const traceMesh = new THREE.Mesh(tubeGeo, materials.copperTraces);
-      tracesGroup.add(traceMesh);
+    const bottomDeck = new THREE.Mesh(deckRingGeo, materials.titaniumMetal);
+    bottomDeck.position.y = -busHeight / 2;
+    satelliteGroup.add(bottomDeck);
+
+    // ==========================================
+    // 2. EMBEDDED FLIGHT COMPUTER & PCB ON FRONT DECK
+    // ==========================================
+    const esp32Group = new THREE.Group();
+    partsRefs.current.esp32 = esp32Group;
+
+    // Motherboard PCB Substrate
+    const pcbGeo = new THREE.BoxGeometry(1.5, 1.1, 0.05);
+    const pcbMesh = new THREE.Mesh(pcbGeo, materials.pcbSubstrate);
+    esp32Group.add(pcbMesh);
+
+    // Golden Edge Strip
+    const pcbEdgeGeo = new THREE.BoxGeometry(1.54, 1.14, 0.02);
+    const pcbEdge = new THREE.Mesh(pcbEdgeGeo, materials.goldPins);
+    esp32Group.add(pcbEdge);
+
+    // ESP32 SoC Main Package
+    const mcuGeo = new THREE.BoxGeometry(0.75, 0.55, 0.09);
+    const mcuMesh = new THREE.Mesh(mcuGeo, materials.titaniumMetal);
+    mcuMesh.position.set(-0.25, 0.05, 0.06);
+    esp32Group.add(mcuMesh);
+
+    // Metallic Stamped RF Shield Can (ESP32-WROOM-32)
+    const shieldGeo = new THREE.BoxGeometry(0.55, 0.42, 0.1);
+    const shieldMesh = new THREE.Mesh(shieldGeo, materials.chipShield);
+    shieldMesh.position.set(-0.25, 0.05, 0.07);
+    esp32Group.add(shieldMesh);
+
+    // Golden QFN Pins around the ESP32 chip
+    const pinGeo = new THREE.BoxGeometry(0.03, 0.07, 0.02);
+    for (let p = -3; p <= 3; p++) {
+      const topPin = new THREE.Mesh(pinGeo, materials.goldPins);
+      topPin.position.set(-0.25 + p * 0.08, 0.35, 0.05);
+      esp32Group.add(topPin);
+
+      const botPin = new THREE.Mesh(pinGeo, materials.goldPins);
+      botPin.position.set(-0.25 + p * 0.08, -0.25, 0.05);
+      esp32Group.add(botPin);
     }
-    satelliteGroup.add(tracesGroup);
 
-    // --- D. Dual Solar Photovoltaic Array Wings ---
-    const solarWingGroupLeft = new THREE.Group();
-    const solarWingGroupRight = new THREE.Group();
+    // Cylindrical Quartz Crystal Oscillator Can (32.768 kHz / 40 MHz)
+    const crystalGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.22, 12);
+    crystalGeo.rotateZ(Math.PI / 2);
+    const crystalMesh = new THREE.Mesh(crystalGeo, materials.silverCan);
+    crystalMesh.position.set(0.22, 0.28, 0.06);
+    esp32Group.add(crystalMesh);
 
-    // Wing frame & panels
-    const panelFrameGeo = new THREE.BoxGeometry(1.6, 1.1, 0.04);
-    const panelCellGeo = new THREE.BoxGeometry(1.5, 1.0, 0.05);
+    // SMD Ceramic Capacitors and Resistor Arrays
+    const smdGeo = new THREE.BoxGeometry(0.06, 0.04, 0.04);
+    const smdPositions = [
+      [0.2, 0.12], [0.3, 0.12], [0.4, 0.12],
+      [0.2, -0.05], [0.3, -0.05], [0.4, -0.05],
+      [0.2, -0.2], [0.3, -0.2], [0.4, -0.2]
+    ];
+    smdPositions.forEach(([x, y]) => {
+      const smd = new THREE.Mesh(smdGeo, materials.silverCan);
+      smd.position.set(x, y, 0.05);
+      esp32Group.add(smd);
+    });
 
-    // Left Wing
-    const leftFrame = new THREE.Mesh(panelFrameGeo, materials.solarFrame);
-    const leftCell = new THREE.Mesh(panelCellGeo, materials.solarCell);
-    solarWingGroupLeft.add(leftFrame);
-    solarWingGroupLeft.add(leftCell);
-    solarWingGroupLeft.position.set(-2.2, 0, 0);
+    // Dual-Row Gold Pin Header (I2C / SPI / UART Breakout)
+    const headerBaseGeo = new THREE.BoxGeometry(0.12, 0.85, 0.08);
+    const headerBase = new THREE.Mesh(headerBaseGeo, materials.darkBody);
+    headerBase.position.set(0.62, 0, 0.06);
+    esp32Group.add(headerBase);
 
-    // Structural connecting arm Left
-    const armGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.9);
-    armGeo.rotateZ(Math.PI / 2);
-    const leftArm = new THREE.Mesh(armGeo, materials.solarFrame);
-    leftArm.position.set(-1.4, 0, 0);
-    satelliteGroup.add(leftArm);
-    satelliteGroup.add(solarWingGroupLeft);
+    for (let h = -4; h <= 4; h++) {
+      const pinStick = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.14), materials.goldPins);
+      pinStick.position.set(0.62, h * 0.09, 0.12);
+      esp32Group.add(pinStick);
+    }
 
-    // Right Wing
-    const rightFrame = new THREE.Mesh(panelFrameGeo, materials.solarFrame);
-    const rightCell = new THREE.Mesh(panelCellGeo, materials.solarCell);
-    solarWingGroupRight.add(rightFrame);
-    solarWingGroupRight.add(rightCell);
-    solarWingGroupRight.position.set(2.2, 0, 0);
+    // Glowing Circuit Bus Traces (I2C / SPI / Power Lines)
+    const traceCoords = [
+      [-0.25, 0.35, 0.04], [0.05, 0.35, 0.04], [0.05, 0.12, 0.04], [0.18, 0.12, 0.04],
+      [-0.25, -0.25, 0.04], [0.05, -0.25, 0.04], [0.05, -0.05, 0.04], [0.18, -0.05, 0.04],
+      [0.45, 0.12, 0.04], [0.55, 0.12, 0.04], [0.55, 0.25, 0.04], [0.62, 0.25, 0.04],
+      [0.45, -0.05, 0.04], [0.55, -0.05, 0.04], [0.55, -0.15, 0.04], [0.62, -0.15, 0.04],
+    ];
+    for (let t = 0; t < traceCoords.length; t += 2) {
+      const p1 = new THREE.Vector3(...traceCoords[t]);
+      const p2 = new THREE.Vector3(...traceCoords[t + 1]);
+      const lineCurve = new THREE.LineCurve3(p1, p2);
+      const tubeGeo = new THREE.TubeGeometry(lineCurve, 1, 0.012, 6, false);
+      const traceMesh = new THREE.Mesh(tubeGeo, materials.copperTraces);
+      esp32Group.add(traceMesh);
+    }
 
-    // Structural connecting arm Right
-    const rightArm = new THREE.Mesh(armGeo, materials.solarFrame);
-    rightArm.position.set(1.4, 0, 0);
-    satelliteGroup.add(rightArm);
-    satelliteGroup.add(solarWingGroupRight);
-
-    // --- E. Solar Panel Grid Wireframe Traces ---
-    const solarWireGeo = new THREE.WireframeGeometry(new THREE.PlaneGeometry(1.48, 0.98, 6, 3));
-    const solarWireMat = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.4 });
-    const leftWire = new THREE.LineSegments(solarWireGeo, solarWireMat);
-    leftWire.position.z = 0.03;
-    solarWingGroupLeft.add(leftWire);
-
-    const rightWire = new THREE.LineSegments(solarWireGeo, solarWireMat);
-    rightWire.position.z = 0.03;
-    solarWingGroupRight.add(rightWire);
-
-    // --- F. Pulsating SMD Status LEDs ---
-    const ledGeo = new THREE.BoxGeometry(0.06, 0.08, 0.04);
-    
-    // TX LED (Cyan)
+    // Status Indicator LEDs (TX, RX, PWR, LINK)
+    const ledGeo = new THREE.BoxGeometry(0.05, 0.06, 0.03);
     const txLed = new THREE.Mesh(ledGeo, materials.glowingCyan);
-    txLed.position.set(0.8, -0.6, 0.06);
-    satelliteGroup.add(txLed);
+    txLed.position.set(-0.55, 0.32, 0.05);
+    esp32Group.add(txLed);
 
-    // RX LED (Green)
     const rxLed = new THREE.Mesh(ledGeo, materials.glowingGreen);
-    rxLed.position.set(0.9, -0.6, 0.06);
-    satelliteGroup.add(rxLed);
+    rxLed.position.set(-0.55, 0.2, 0.05);
+    esp32Group.add(rxLed);
 
-    // Power LED (Amber)
     const pwrLed = new THREE.Mesh(ledGeo, materials.glowingAmber);
-    pwrLed.position.set(1.0, -0.6, 0.06);
-    satelliteGroup.add(pwrLed);
+    pwrLed.position.set(-0.55, 0.08, 0.05);
+    esp32Group.add(pwrLed);
 
-    // --- G. Orbital Gyroscopic Rings ---
-    const ringGeo1 = new THREE.RingGeometry(3.3, 3.32, 64);
+    const wifiLed = new THREE.Mesh(ledGeo, materials.glowingPurple);
+    wifiLed.position.set(-0.55, -0.04, 0.05);
+    esp32Group.add(wifiLed);
+
+    // Position ESP32 equipment deck on the front of the bus
+    esp32Group.position.set(0, 0, busRadius + 0.05);
+    satelliteGroup.add(esp32Group);
+
+    // ==========================================
+    // 3. ARTICULATING SOLAR ARRAY WINGS (LEFT & RIGHT)
+    // ==========================================
+    const solarGroup = new THREE.Group();
+    partsRefs.current.solar = solarGroup;
+
+    const createSolarWing = (isLeft) => {
+      const wingGroup = new THREE.Group();
+      const dir = isLeft ? -1 : 1;
+
+      // Connecting Swivel Arm & Hinge Bracket
+      const hingeGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.25, 12);
+      const hingeMesh = new THREE.Mesh(hingeGeo, materials.titaniumMetal);
+      hingeMesh.position.set(dir * 1.15, 0, 0);
+      wingGroup.add(hingeMesh);
+
+      const boomGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.8, 8);
+      boomGeo.rotateZ(Math.PI / 2);
+      const boomMesh = new THREE.Mesh(boomGeo, materials.titaniumMetal);
+      boomMesh.position.set(dir * 1.55, 0, 0);
+      wingGroup.add(boomMesh);
+
+      // Panel 1 (Inner Segment)
+      const panelFrameGeo = new THREE.BoxGeometry(1.3, 1.1, 0.04);
+      const panelFrame1 = new THREE.Mesh(panelFrameGeo, materials.solarFrame);
+      panelFrame1.position.set(dir * 2.5, 0, 0);
+      wingGroup.add(panelFrame1);
+
+      const panelCellsGeo = new THREE.BoxGeometry(1.22, 1.02, 0.05);
+      const panelCells1 = new THREE.Mesh(panelCellsGeo, materials.solarCell);
+      panelCells1.position.set(dir * 2.5, 0, 0);
+      wingGroup.add(panelCells1);
+
+      // Panel 2 (Outer Folding Segment)
+      const panelFrame2 = new THREE.Mesh(panelFrameGeo, materials.solarFrame);
+      panelFrame2.position.set(dir * 3.9, 0, 0);
+      wingGroup.add(panelFrame2);
+
+      const panelCells2 = new THREE.Mesh(panelCellsGeo, materials.solarCell);
+      panelCells2.position.set(dir * 3.9, 0, 0);
+      wingGroup.add(panelCells2);
+
+      // Inter-panel gold hinge joint
+      const interHinge = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.15, 8), materials.goldPins);
+      interHinge.position.set(dir * 3.2, 0, 0);
+      wingGroup.add(interHinge);
+
+      // Silver Busbar Wireframe Grid Lines on Solar Cells
+      const wireGridGeo = new THREE.WireframeGeometry(new THREE.PlaneGeometry(1.2, 1.0, 5, 4));
+      const wireMat = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.5 });
+      
+      const gridLine1 = new THREE.LineSegments(wireGridGeo, wireMat);
+      gridLine1.position.set(dir * 2.5, 0, 0.03);
+      wingGroup.add(gridLine1);
+
+      const gridLine2 = new THREE.LineSegments(wireGridGeo, wireMat);
+      gridLine2.position.set(dir * 3.9, 0, 0.03);
+      wingGroup.add(gridLine2);
+
+      return wingGroup;
+    };
+
+    const leftWing = createSolarWing(true);
+    const rightWing = createSolarWing(false);
+    solarGroup.add(leftWing);
+    solarGroup.add(rightWing);
+    satelliteGroup.add(solarGroup);
+
+    // ==========================================
+    // 4. HIGH-GAIN PARABOLIC DISH ANTENNA (TOP DECK)
+    // ==========================================
+    const antennaGroup = new THREE.Group();
+    partsRefs.current.antenna = antennaGroup;
+
+    // Gimbal Steering Joint Base
+    const gimbalBaseGeo = new THREE.CylinderGeometry(0.12, 0.15, 0.2, 12);
+    const gimbalBase = new THREE.Mesh(gimbalBaseGeo, materials.titaniumMetal);
+    gimbalBase.position.set(0, busHeight / 2 + 0.1, -0.3);
+    antennaGroup.add(gimbalBase);
+
+    // Parabolic Dish Reflector
+    const dishRadius = 0.55;
+    const dishGeo = new THREE.SphereGeometry(dishRadius, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.45);
+    const dishMesh = new THREE.Mesh(dishGeo, materials.dishReflector);
+    dishMesh.rotation.x = -Math.PI / 3.5;
+    dishMesh.position.set(0, busHeight / 2 + 0.45, -0.2);
+    antennaGroup.add(dishMesh);
+
+    // Gold Mesh Interior Lining
+    const dishMeshLining = new THREE.Mesh(dishGeo, materials.dishGoldMesh);
+    dishMeshLining.rotation.x = -Math.PI / 3.5;
+    dishMeshLining.position.set(0, busHeight / 2 + 0.455, -0.198);
+    antennaGroup.add(dishMeshLining);
+
+    // Tripod Sub-reflector Feed Struts & Horn Probe
+    const feedProbeGeo = new THREE.CylinderGeometry(0.015, 0.02, 0.4, 8);
+    const feedProbe = new THREE.Mesh(feedProbeGeo, materials.glowingCyan);
+    feedProbe.rotation.x = -Math.PI / 3.5;
+    feedProbe.position.set(0, busHeight / 2 + 0.65, -0.05);
+    antennaGroup.add(feedProbe);
+
+    satelliteGroup.add(antennaGroup);
+
+    // ==========================================
+    // 5. ATTITUDE CONTROL (RCS) THRUSTER PODS
+    // ==========================================
+    const thrustersGroup = new THREE.Group();
+    partsRefs.current.thrusters = thrustersGroup;
+
+    const cornerAngles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
+    cornerAngles.forEach((ang) => {
+      const podBox = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.18, 0.15), materials.darkBody);
+      const x = Math.sin(ang) * (busRadius + 0.04);
+      const z = Math.cos(ang) * (busRadius + 0.04);
+      podBox.position.set(x, -busHeight / 2 + 0.2, z);
+      podBox.rotation.y = ang;
+      thrustersGroup.add(podBox);
+
+      // Conical Titanium Nozzles pointing outward and down
+      const nozzleGeo = new THREE.ConeGeometry(0.045, 0.12, 10, 1, true);
+      const nozzleMesh = new THREE.Mesh(nozzleGeo, materials.thrusterNozzle);
+      nozzleMesh.position.set(x * 1.08, -busHeight / 2 + 0.15, z * 1.08);
+      nozzleMesh.rotation.x = Math.PI;
+      thrustersGroup.add(nozzleMesh);
+    });
+    satelliteGroup.add(thrustersGroup);
+
+    // ==========================================
+    // 6. OPTICAL STAR TRACKERS & HORIZON SENSORS
+    // ==========================================
+    const starTrackerGeo = new THREE.CylinderGeometry(0.06, 0.08, 0.2, 12);
+    const starTracker1 = new THREE.Mesh(starTrackerGeo, materials.titaniumMetal);
+    starTracker1.position.set(0.45, busHeight / 2 + 0.1, 0.35);
+    starTracker1.rotation.z = -0.3;
+    satelliteGroup.add(starTracker1);
+
+    const starTracker2 = new THREE.Mesh(starTrackerGeo, materials.titaniumMetal);
+    starTracker2.position.set(-0.45, busHeight / 2 + 0.1, 0.35);
+    starTracker2.rotation.z = 0.3;
+    satelliteGroup.add(starTracker2);
+
+    // ==========================================
+    // 7. ORBITAL GYROSCOPE RINGS & PARTICLE HALO
+    // ==========================================
+    const ringGeo1 = new THREE.RingGeometry(3.6, 3.63, 64);
     const ringMesh1 = new THREE.Mesh(ringGeo1, materials.orbitalRings);
     scene.add(ringMesh1);
 
-    const ringGeo2 = new THREE.RingGeometry(3.6, 3.62, 64);
+    const ringGeo2 = new THREE.RingGeometry(4.1, 4.13, 64);
     const ringMesh2 = new THREE.Mesh(ringGeo2, new THREE.MeshBasicMaterial({
       color: 0x8b5cf6,
       wireframe: true,
       transparent: true,
-      opacity: 0.3
+      opacity: 0.25
     }));
     ringMesh2.rotation.x = Math.PI / 3;
     scene.add(ringMesh2);
 
-    const ringGeo3 = new THREE.RingGeometry(4.0, 4.02, 64);
-    const ringMesh3 = new THREE.Mesh(ringGeo3, new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.2
-    }));
-    ringMesh3.rotation.y = Math.PI / 4;
-    scene.add(ringMesh3);
-
-    // Satellite High-Gain Dish Antenna on top
-    const dishGeo = new THREE.SphereGeometry(0.3, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.4);
-    const dishMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.2, side: THREE.DoubleSide });
-    const dishMesh = new THREE.Mesh(dishGeo, dishMat);
-    dishMesh.rotation.x = -Math.PI / 3;
-    dishMesh.position.set(0, 1.45, 0.2);
-    satelliteGroup.add(dishMesh);
-
-    // Dish Feed Horn / Probe
-    const probeGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.25);
-    const probeMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff });
-    const probeMesh = new THREE.Mesh(probeGeo, probeMat);
-    probeMesh.position.set(0, 1.55, 0.3);
-    probeMesh.rotation.x = -Math.PI / 3;
-    satelliteGroup.add(probeMesh);
-
-    // Orbiting Sensor Breakout Node (Representing I2C sensors like MAX30102 / BME280)
-    const sensorNodeGeo = new THREE.BoxGeometry(0.25, 0.35, 0.05);
-    const sensorNodeMat = new THREE.MeshStandardMaterial({ color: 0x0a192f, metalness: 0.7, roughness: 0.3 });
-    const sensorNode = new THREE.Mesh(sensorNodeGeo, sensorNodeMat);
-    scene.add(sensorNode);
-
-    // Orbiting particle halo
-    const particleCount = 100;
+    // Halo Particles
+    const particleCount = 120;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
     for (let i = 0; i < particleCount * 3; i += 3) {
       const theta = Math.random() * Math.PI * 2;
       const phi = (Math.random() - 0.5) * Math.PI;
-      const r = 2.8 + Math.random() * 1.5;
+      const r = 3.2 + Math.random() * 2.0;
       particlePositions[i] = r * Math.cos(theta) * Math.cos(phi);
       particlePositions[i + 1] = r * Math.sin(phi);
       particlePositions[i + 2] = r * Math.sin(theta) * Math.cos(phi);
@@ -322,17 +483,17 @@ export default function Hero3D() {
       color: 0x00e5ff,
       size: 0.04,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.65,
       blending: THREE.AdditiveBlending,
     });
     const particlePoints = new THREE.Points(particleGeo, particleMat);
     scene.add(particlePoints);
 
     // --- Interaction & Mouse Parallax ---
-    let targetRotationX = 0.2;
-    let targetRotationY = -0.3;
-    let currentRotationX = 0.2;
-    let currentRotationY = -0.3;
+    let targetRotationX = 0.18;
+    let targetRotationY = -0.35;
+    let currentRotationX = 0.18;
+    let currentRotationY = -0.35;
     let mouseX = 0;
     let mouseY = 0;
     let lastPointerX = 0;
@@ -382,7 +543,6 @@ export default function Hero3D() {
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
-
     window.addEventListener('resize', handleResize);
 
     // Animation Loop
@@ -394,8 +554,8 @@ export default function Hero3D() {
 
       // Base auto-rotation when not dragging
       if (!isUserDragging) {
-        targetRotationY += 0.003;
-        targetRotationX = 0.15 + Math.sin(elapsedTime * 0.5) * 0.08 + mouseY * 0.2;
+        targetRotationY += 0.0035;
+        targetRotationX = 0.18 + Math.sin(elapsedTime * 0.6) * 0.08 + mouseY * 0.15;
         targetRotationY += mouseX * 0.002;
       }
 
@@ -405,28 +565,20 @@ export default function Hero3D() {
 
       satelliteGroup.rotation.x = currentRotationX;
       satelliteGroup.rotation.y = currentRotationY;
-      satelliteGroup.position.y = Math.sin(elapsedTime * 1.2) * 0.12; // Gentle hover bobbing
+      satelliteGroup.position.y = Math.sin(elapsedTime * 1.3) * 0.12;
 
-      // Pulsate SMD LEDs
-      materials.glowingCyan.color.setHSL(0.52, 1, 0.4 + Math.sin(elapsedTime * 8) * 0.3);
-      materials.glowingGreen.color.setHSL(0.38, 1, 0.4 + Math.cos(elapsedTime * 6) * 0.3);
-      materials.glowingAmber.color.setHSL(0.1, 1, 0.45 + Math.sin(elapsedTime * 4) * 0.2);
+      // Pulsate Status LEDs
+      materials.glowingCyan.color.setHSL(0.52, 1, 0.45 + Math.sin(elapsedTime * 8) * 0.25);
+      materials.glowingGreen.color.setHSL(0.38, 1, 0.45 + Math.cos(elapsedTime * 6) * 0.25);
+      materials.glowingAmber.color.setHSL(0.1, 1, 0.5 + Math.sin(elapsedTime * 4) * 0.2);
+      materials.glowingPurple.color.setHSL(0.78, 1, 0.5 + Math.cos(elapsedTime * 5) * 0.2);
 
       // Rotate orbital rings
-      ringMesh1.rotation.z = elapsedTime * 0.1;
-      ringMesh2.rotation.z = -elapsedTime * 0.15;
-      ringMesh3.rotation.x = Math.PI / 4 + Math.sin(elapsedTime * 0.2) * 0.1;
+      ringMesh1.rotation.z = elapsedTime * 0.08;
+      ringMesh2.rotation.z = -elapsedTime * 0.12;
 
-      // Orbit sensor node around satellite
-      const orbitAngle = elapsedTime * 0.8;
-      sensorNode.position.x = Math.cos(orbitAngle) * 3.4;
-      sensorNode.position.z = Math.sin(orbitAngle) * 3.4;
-      sensorNode.position.y = Math.sin(elapsedTime * 1.5) * 0.8;
-      sensorNode.rotation.x = elapsedTime;
-      sensorNode.rotation.y = elapsedTime * 1.2;
-
-      // Rotate particle halo
-      particlePoints.rotation.y = -elapsedTime * 0.05;
+      // Slow particle halo rotation
+      particlePoints.rotation.y = -elapsedTime * 0.04;
 
       renderer.render(scene, camera);
       animId = requestAnimationFrame(animate);
@@ -434,7 +586,6 @@ export default function Hero3D() {
 
     animate();
 
-    // Clean up
     return () => {
       container.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('pointermove', handlePointerMove);
@@ -451,91 +602,128 @@ export default function Hero3D() {
   // Handle mode switches (Normal / Bus / Wireframe)
   useEffect(() => {
     const materials = materialsRef.current;
-    if (!materials || !materials.pcbSubstrate) return;
+    if (!materials || !materials.darkBody) return;
 
     if (viewMode === 'wireframe') {
-      materials.pcbSubstrate.wireframe = true;
-      materials.chipPackage.wireframe = true;
+      materials.darkBody.wireframe = true;
+      materials.goldFoil.wireframe = true;
       materials.solarCell.wireframe = true;
-      materials.solarFrame.wireframe = true;
+      materials.pcbSubstrate.wireframe = true;
       materials.copperTraces.emissiveIntensity = 1.0;
     } else if (viewMode === 'bus') {
-      materials.pcbSubstrate.wireframe = false;
-      materials.chipPackage.wireframe = false;
+      materials.darkBody.wireframe = false;
+      materials.goldFoil.wireframe = false;
       materials.solarCell.wireframe = false;
-      materials.solarFrame.wireframe = false;
-      materials.copperTraces.emissiveIntensity = 2.0;
-      materials.pcbSubstrate.color.setHex(0x020814);
+      materials.pcbSubstrate.wireframe = false;
+      materials.copperTraces.emissiveIntensity = 2.2;
     } else {
       // Normal
-      materials.pcbSubstrate.wireframe = false;
-      materials.chipPackage.wireframe = false;
+      materials.darkBody.wireframe = false;
+      materials.goldFoil.wireframe = false;
       materials.solarCell.wireframe = false;
-      materials.solarFrame.wireframe = false;
-      materials.copperTraces.emissiveIntensity = 0.6;
-      materials.pcbSubstrate.color.setHex(0x07152b);
+      materials.pcbSubstrate.wireframe = false;
+      materials.copperTraces.emissiveIntensity = 0.7;
     }
   }, [viewMode]);
 
+  // Handle component focus highlights
+  useEffect(() => {
+    const parts = partsRefs.current;
+    if (!parts.esp32) return;
+
+    // Reset scales
+    if (parts.esp32) parts.esp32.scale.set(1, 1, 1);
+    if (parts.solar) parts.solar.scale.set(1, 1, 1);
+    if (parts.antenna) parts.antenna.scale.set(1, 1, 1);
+    if (parts.thrusters) parts.thrusters.scale.set(1, 1, 1);
+
+    if (activePart === 'esp32' && parts.esp32) {
+      parts.esp32.scale.set(1.15, 1.15, 1.15);
+    } else if (activePart === 'solar' && parts.solar) {
+      parts.solar.scale.set(1.08, 1.08, 1.08);
+    } else if (activePart === 'antenna' && parts.antenna) {
+      parts.antenna.scale.set(1.2, 1.2, 1.2);
+    } else if (activePart === 'thrusters' && parts.thrusters) {
+      parts.thrusters.scale.set(1.2, 1.2, 1.2);
+    }
+  }, [activePart]);
+
   return (
-    <div className="relative w-full h-[480px] lg:h-[620px] flex items-center justify-center select-none">
-      {/* 3D Canvas Mount */}
-      {webGLSupported ? (
-        <div
-          ref={containerRef}
-          className={`w-full h-full cursor-grab active:cursor-grabbing transition-opacity duration-700`}
-        />
-      ) : (
-        /* Graceful Fallback for non-WebGL devices */
-        <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center glass-panel rounded-2xl">
-          <div className="w-24 h-24 rounded-full border-2 border-cyan-400/50 flex items-center justify-center mb-4 text-cyan-300">
-            <svg className="w-12 h-12 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 3v18M15 3v18M3 9h18M3 15h18" />
-            </svg>
+    <div className="relative w-full h-[520px] lg:h-[640px] flex flex-col items-center justify-between select-none">
+      
+      {/* 3D Canvas Container */}
+      <div className="relative w-full flex-1">
+        {webGLSupported ? (
+          <div
+            ref={containerRef}
+            className="w-full h-full cursor-grab active:cursor-grabbing transition-opacity duration-700"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center glass-panel rounded-2xl">
+            <div className="w-20 h-20 rounded-full border-2 border-cyan-400/50 flex items-center justify-center mb-3 text-cyan-300">
+              <span className="font-mono text-xl">🛰️</span>
+            </div>
+            <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase mb-1">
+              ORBITAL SATELLITE WITH ESP32
+            </span>
+            <p className="text-slate-400 text-xs max-w-xs font-mono">
+              Equipped with Dual Solar Panels, Parabolic Radio Antenna, and Real-time Sensor Systems.
+            </p>
           </div>
-          <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase mb-1">EMBEDDED HARDWARE CORE</span>
-          <p className="text-slate-400 text-xs max-w-xs font-mono">
-            ESP32 Tensilica Dual-Core Architecture • I2C / SPI / UART Sensor Grid Active
-          </p>
-        </div>
-      )}
+        )}
 
-      {/* Futuristic HUD Overlay Controls */}
-      <div className="absolute bottom-3 left-4 right-4 flex flex-wrap items-center justify-between pointer-events-none gap-2">
-        {/* Left Telemetry Stamp */}
-        <div className="flex items-center space-x-2 glass-panel px-3 py-1.5 rounded text-[11px] font-mono text-slate-300 border border-cyan-500/20 pointer-events-auto">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          <span className="text-cyan-300">ESP32-ORBITAL-V3</span>
-          <span className="text-slate-500">|</span>
-          <span className="text-slate-400 hidden sm:inline">DRAG TO INSPECT</span>
+        {/* Floating Top Part Explorer Buttons (Simple everyday labels) */}
+        <div className="absolute top-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+          <div className="glass-panel px-3 py-1 rounded-full text-[11px] font-mono text-cyan-300 border border-cyan-500/20 pointer-events-auto">
+            <span>EXPLORE SATELLITE PARTS:</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1 glass-panel p-1 rounded-lg border border-cyan-500/20 pointer-events-auto">
+            {[
+              { id: 'all', label: 'ALL' },
+              { id: 'esp32', label: 'ESP32 COMPUTER' },
+              { id: 'solar', label: 'SOLAR WINGS' },
+              { id: 'antenna', label: 'DISH ANTENNA' },
+              { id: 'thrusters', label: 'THRUSTERS' }
+            ].map((part) => (
+              <button
+                key={part.id}
+                onClick={() => {
+                  setActivePart(part.id);
+                  sound.click();
+                }}
+                className={`px-2 py-0.5 text-[10px] font-mono rounded transition-all ${
+                  activePart === part.id
+                    ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-400/50 shadow-neon-cyan'
+                    : 'text-slate-400 hover:text-white hover:bg-space-800'
+                }`}
+              >
+                {part.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Right Inspection Mode Switcher */}
-        <div className="flex items-center space-x-1 glass-panel p-1 rounded border border-cyan-500/20 pointer-events-auto">
-          {[
-            { id: 'normal', label: 'DEFAULT' },
-            { id: 'bus', label: 'BUS TOPOLOGY' },
-            { id: 'wireframe', label: 'X-RAY' }
-          ].map((mode) => (
-            <button
-              key={mode.id}
-              onClick={() => {
-                setViewMode(mode.id);
-                sound.click();
-              }}
-              className={`px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded transition-all ${
-                viewMode === mode.id
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-neon-cyan'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-space-800'
-              }`}
-            >
-              {mode.label}
-            </button>
-          ))}
+        {/* Drag Hint Tag */}
+        <div className="absolute bottom-3 left-4 text-[10px] font-mono text-slate-400 bg-space-950/70 px-2.5 py-1 rounded border border-cyan-500/20 pointer-events-none">
+          👆 Click & Drag to Rotate 360°
         </div>
       </div>
 
-      {/* Floating Corner Accents */}
+      {/* Clear Plain-English Satellite Info Card at Bottom */}
+      <div className="w-full px-3 py-2.5 bg-space-950/80 border-t border-cyan-500/20 rounded-b-2xl">
+        <div className="flex items-start space-x-2 text-xs">
+          <span className="w-2 h-2 rounded-full bg-cyan-400 shrink-0 mt-1 animate-pulse" />
+          <p className="text-slate-200 text-xs font-sans leading-relaxed">
+            <strong className="text-cyan-300 font-mono uppercase mr-1">
+              {activePart.toUpperCase()}:
+            </strong>
+            {partExplanations[activePart]}
+          </p>
+        </div>
+      </div>
+
+      {/* Corner Brackets */}
       <div className="hud-corner-tl" />
       <div className="hud-corner-tr" />
       <div className="hud-corner-bl" />

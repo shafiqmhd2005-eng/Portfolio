@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Terminal, Menu, X, Cpu, Radio } from 'lucide-react';
+import { Volume2, VolumeX, Terminal, Menu, X, Cpu } from 'lucide-react';
 import { sound } from '../utils/audio';
 
 const NAV_ITEMS = [
   { label: 'HOME', href: '#home' },
-  { label: 'ABOUT', href: '#about' },
+  { label: 'ABOUT ME', href: '#about' },
   { label: 'SKILLS', href: '#skills' },
   { label: 'EXPERIENCE', href: '#experience' },
   { label: 'PROJECTS', href: '#projects' },
+  { label: 'EDUCATION', href: '#education' },
   { label: 'CERTIFICATIONS', href: '#certifications' },
   { label: 'CONTACT', href: '#contact' },
 ];
@@ -22,7 +23,6 @@ export default function Navbar({ onOpenTerminal, onOpenResume }) {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 40);
 
-      // Simple active section detection
       const sections = NAV_ITEMS.map((item) => item.href.substring(1));
       for (const s of sections.reverse()) {
         const el = document.getElementById(s);
@@ -65,7 +65,7 @@ export default function Navbar({ onOpenTerminal, onOpenResume }) {
         }`}
       >
         <div className="flex items-center justify-between">
-          {/* Brand / Logo */}
+          {/* Brand / Name */}
           <a
             href="#home"
             onClick={(e) => scrollToSection(e, '#home')}
@@ -76,20 +76,19 @@ export default function Navbar({ onOpenTerminal, onOpenResume }) {
             </div>
             <div>
               <div className="font-display font-bold text-sm sm:text-base text-white tracking-wider flex items-center gap-1.5">
-                <span>MOHAMED SHAFIQ</span>
-                <span className="text-cyan-400 font-mono text-xs hidden sm:inline">M</span>
+                <span>MOHAMED SHAFIQ M</span>
               </div>
               <div className="text-[10px] font-mono text-slate-400 flex items-center space-x-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>SYSTEM ONLINE</span>
+                <span className="text-emerald-400 font-bold">AVAILABLE FOR HIRE</span>
                 <span className="text-slate-600 hidden md:inline">|</span>
-                <span className="text-cyan-400/80 hidden md:inline">EMBEDDED ENG</span>
+                <span className="text-cyan-300 hidden md:inline">Embedded Engineer</span>
               </div>
             </div>
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2 text-xs font-mono">
+          <nav className="hidden xl:flex items-center space-x-1 text-xs font-mono">
             {NAV_ITEMS.map((item) => {
               const isActive = activeSection === item.href.substring(1);
               return (
@@ -97,7 +96,7 @@ export default function Navbar({ onOpenTerminal, onOpenResume }) {
                   key={item.label}
                   href={item.href}
                   onClick={(e) => scrollToSection(e, item.href)}
-                  className={`px-3 py-1.5 rounded-lg transition-all relative ${
+                  className={`px-2.5 py-1.5 rounded-lg transition-all relative ${
                     isActive
                       ? 'text-cyan-300 bg-cyan-500/15 border border-cyan-400/40 shadow-neon-cyan'
                       : 'text-slate-300 hover:text-cyan-300 hover:bg-space-800'
@@ -112,12 +111,12 @@ export default function Navbar({ onOpenTerminal, onOpenResume }) {
             })}
           </nav>
 
-          {/* Utility Tools (Audio, CLI, Resume) */}
+          {/* Utility Tools */}
           <div className="flex items-center space-x-2">
             {/* Audio Toggle */}
             <button
               onClick={handleAudioToggle}
-              title={isAudioMuted ? 'Unmute sci-fi audio effects' : 'Mute audio'}
+              title={isAudioMuted ? 'Turn on sound effects' : 'Mute sound effects'}
               className={`p-2 rounded-lg border text-xs font-mono transition-all ${
                 isAudioMuted
                   ? 'border-slate-700 text-slate-500 hover:text-slate-300 bg-space-900/60'
@@ -127,26 +126,26 @@ export default function Navbar({ onOpenTerminal, onOpenResume }) {
               {isAudioMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
             </button>
 
-            {/* Embedded CLI Terminal Launcher */}
+            {/* Embedded Terminal Button */}
             <button
               onClick={() => {
                 sound.click();
                 onOpenTerminal();
               }}
-              title="Launch Embedded Terminal CLI"
+              title="Open Interactive Command Terminal"
               className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-space-900/80 border border-cyan-500/30 text-cyan-300 hover:border-cyan-400 hover:bg-cyan-500/15 text-xs font-mono transition-all"
             >
               <Terminal className="w-3.5 h-3.5" />
-              <span className="text-[11px]">CLI [~]</span>
+              <span className="text-[11px]">CONSOLE</span>
             </button>
 
-            {/* Quick Resume Button */}
+            {/* Resume Button */}
             <button
               onClick={() => {
                 sound.click();
                 onOpenResume();
               }}
-              className="hidden md:flex items-center px-3 py-1.5 rounded-lg bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 hover:bg-cyan-500/30 text-xs font-mono transition-all shadow-neon-cyan"
+              className="hidden md:flex items-center px-3 py-1.5 rounded-lg bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 hover:bg-cyan-500/30 text-xs font-mono font-bold transition-all shadow-neon-cyan"
             >
               RESUME
             </button>
@@ -157,7 +156,7 @@ export default function Navbar({ onOpenTerminal, onOpenResume }) {
                 sound.click();
                 setMobileMenuOpen(!mobileMenuOpen);
               }}
-              className="lg:hidden p-2 rounded-lg bg-space-900/80 border border-slate-700 text-slate-300 hover:text-cyan-300 hover:border-cyan-400"
+              className="xl:hidden p-2 rounded-lg bg-space-900/80 border border-slate-700 text-slate-300 hover:text-cyan-300 hover:border-cyan-400"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -166,7 +165,7 @@ export default function Navbar({ onOpenTerminal, onOpenResume }) {
 
         {/* Mobile Slide-out Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-3 pt-3 border-t border-cyan-500/20 flex flex-col space-y-2 font-mono text-xs animate-fadeIn">
+          <div className="xl:hidden mt-3 pt-3 border-t border-cyan-500/20 flex flex-col space-y-2 font-mono text-xs animate-fadeIn">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.label}
@@ -188,7 +187,7 @@ export default function Navbar({ onOpenTerminal, onOpenResume }) {
                 className="flex-1 py-2 rounded-lg bg-space-900 border border-cyan-500/30 text-cyan-300 text-center flex items-center justify-center space-x-1.5"
               >
                 <Terminal className="w-3.5 h-3.5" />
-                <span>LAUNCH CLI</span>
+                <span>CONSOLE</span>
               </button>
               <button
                 onClick={() => {

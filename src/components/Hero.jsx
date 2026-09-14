@@ -16,32 +16,31 @@ export default function Hero({ onOpenResume, onOpenTerminal }) {
     <section id="home" className="relative min-h-screen pt-28 pb-16 flex items-center justify-center overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
         
-        {/* Top Status & Telemetry Strip */}
+        {/* Top Status Strip (Clear & readable) */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6 font-mono text-xs text-slate-400">
           <div className="flex items-center space-x-2 glass-panel px-3 py-1.5 rounded-lg border border-cyan-500/20">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             <span className="text-emerald-400 font-bold">● {resumeData.personal.status}</span>
             <span className="text-slate-600">|</span>
-            <span className="text-cyan-300 uppercase">EMBEDDED ENGINEER</span>
+            <span className="text-cyan-300 uppercase">Junior Embedded Engineer</span>
             <span className="text-slate-600">|</span>
-            <span className="text-slate-300 uppercase">BANGALORE, INDIA</span>
+            <span className="text-slate-300 uppercase">Bangalore, India</span>
           </div>
 
-          <div className="hidden sm:flex items-center space-x-4 text-[11px] text-slate-500">
-            <span>MISSION ID: <strong className="text-cyan-400">{resumeData.personal.telemetry.missionId}</strong></span>
-            <span>CORE TEMP: <strong className="text-cyan-400">{resumeData.personal.telemetry.coreTemp}</strong></span>
-            <span>BUS BAUD: <strong className="text-purple-400">{resumeData.personal.telemetry.baudRate}</strong></span>
+          <div className="hidden sm:flex items-center space-x-4 text-[11px] text-slate-400">
+            <span>Specialization: <strong className="text-cyan-300">ESP32, Firmware & PCB Design</strong></span>
+            <span>Location: <strong className="text-slate-200">Bangalore</strong></span>
           </div>
         </div>
 
-        {/* 2-Column Hero Grid: Left Content, Right 3D Interactive Core */}
+        {/* 2-Column Hero Grid: Left Bio & CTAs, Right Detailed 3D Satellite */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          {/* Left Column: Headings, Mission Tag, CTAs */}
+          {/* Left Column */}
           <div className="lg:col-span-6 space-y-6">
             
-            {/* Small Label */}
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 font-mono text-xs tracking-widest uppercase">
+            {/* Small Clear Label */}
+            <div className="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 font-mono text-xs tracking-wider uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
               <span>{resumeData.personal.tagline}</span>
             </div>
@@ -61,10 +60,15 @@ export default function Hero({ onOpenResume, onOpenTerminal }) {
               </div>
             </div>
 
-            {/* Supporting Text */}
-            <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-xl font-sans font-light">
-              "{resumeData.personal.statement}"
-            </p>
+            {/* Supporting Text & Plain-Language Explanation */}
+            <div className="space-y-3">
+              <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-sans font-normal">
+                "{resumeData.personal.statement}"
+              </p>
+              <p className="text-slate-400 text-xs sm:text-sm leading-relaxed font-sans">
+                I design electronic circuits, program microchips (ESP32 & Arduino), interface sensors, and build smart devices that connect to the cloud.
+              </p>
+            </div>
 
             {/* Primary Action Buttons */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -89,73 +93,70 @@ export default function Hero({ onOpenResume, onOpenTerminal }) {
               </button>
             </div>
 
-            {/* Animated Telemetry Numbers (strictly verified telemetry status) */}
+            {/* Clear Status Cards */}
             <div className="pt-6 border-t border-cyan-500/15 grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
               <div className="glass-panel p-2.5 rounded-lg border border-cyan-500/20">
-                <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                <div className="text-[10px] text-slate-400 flex items-center gap-1">
                   <Cpu className="w-3 h-3 text-cyan-400" />
-                  MCU
+                  MICROCONTROLLERS
                 </div>
                 <div className="text-cyan-300 font-bold tracking-wider mt-0.5">
-                  {resumeData.personal.telemetry.mcu}
+                  ESP32 & AVR
                 </div>
               </div>
 
               <div className="glass-panel p-2.5 rounded-lg border border-cyan-500/20">
-                <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                <div className="text-[10px] text-slate-400 flex items-center gap-1">
                   <Activity className="w-3 h-3 text-emerald-400" />
-                  FIRMWARE
+                  CODE & FIRMWARE
                 </div>
                 <div className="text-emerald-400 font-bold tracking-wider mt-0.5">
-                  {resumeData.personal.telemetry.firmware}
+                  C / C++
                 </div>
               </div>
 
               <div className="glass-panel p-2.5 rounded-lg border border-cyan-500/20">
-                <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                <div className="text-[10px] text-slate-400 flex items-center gap-1">
                   <Wifi className="w-3 h-3 text-purple-400" />
-                  IOT BUS
+                  SMART IOT
                 </div>
                 <div className="text-purple-300 font-bold tracking-wider mt-0.5">
-                  {resumeData.personal.telemetry.iotBus}
+                  Wi-Fi & Cloud
                 </div>
               </div>
 
               <div className="glass-panel p-2.5 rounded-lg border border-cyan-500/20">
-                <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                <div className="text-[10px] text-slate-400 flex items-center gap-1">
                   <Layers className="w-3 h-3 text-blue-400" />
-                  PCB DESIGN
+                  CIRCUIT DESIGN
                 </div>
                 <div className="text-blue-300 font-bold tracking-wider mt-0.5">
-                  {resumeData.personal.telemetry.pcbFab}
+                  KiCad & Proteus
                 </div>
               </div>
             </div>
 
           </div>
 
-          {/* Right Column: 3D Interactive Embedded Satellite Core */}
+          {/* Right Column: Detailed 3D Interactive Satellite */}
           <div className="lg:col-span-6 relative">
             <div className="relative w-full rounded-2xl glass-panel p-2 sm:p-4 border border-cyan-500/30 shadow-neon-cyan">
               
               {/* Telemetry Header */}
               <div className="flex items-center justify-between px-3 py-2 border-b border-cyan-500/20 font-mono text-[11px] text-slate-400">
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                  <span className="text-cyan-300 font-bold">PRIMARY PAYLOAD: INTERACTIVE 3D SATELLITE & PCB</span>
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <span className="text-cyan-300 font-bold">INTERACTIVE 3D SATELLITE MODEL</span>
                 </div>
-                <span className="text-slate-500 hidden sm:inline">WebGL 2.0 • 60 FPS</span>
+                <span className="text-slate-400 hidden sm:inline">Orbiting at 60 FPS</span>
               </div>
 
-              {/* Three.js Canvas Container */}
+              {/* Enhanced 3D Canvas */}
               <Hero3D />
 
-              {/* Bottom Quick Bar */}
+              {/* Bottom Simple Note */}
               <div className="px-3 py-2 border-t border-cyan-500/15 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                <div className="flex items-center space-x-2">
-                  <span className="text-cyan-400">SOC:</span>
-                  <span>ESP32 (240MHz)</span>
-                </div>
+                <span>🛰️ Demonstrates Embedded Systems in Aerospace & IoT</span>
                 <button
                   onClick={() => {
                     sound.click();
@@ -164,7 +165,7 @@ export default function Hero({ onOpenResume, onOpenTerminal }) {
                   className="text-cyan-300 hover:text-white flex items-center space-x-1"
                 >
                   <Terminal className="w-3 h-3 text-cyan-400" />
-                  <span>OPEN CLI TELEMETRY</span>
+                  <span>OPEN CONSOLE</span>
                 </button>
               </div>
 

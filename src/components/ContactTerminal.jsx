@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle2, Copy, ExternalLink, Github, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, Copy, ExternalLink, Github, Linkedin, MessageSquare } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 import { sound } from '../utils/audio';
 
@@ -28,12 +28,10 @@ export default function ContactTerminal() {
     sound.engage();
     setIsTransmitting(true);
 
-    // Simulate uplink dispatch
     setTimeout(() => {
       setIsTransmitting(false);
       setIsTransmitted(true);
 
-      // Construct mailto link as direct action
       const mailtoLink = `mailto:${contact.email}?subject=${encodeURIComponent(
         formData.subject || 'Embedded Engineering Inquiry'
       )}&body=${encodeURIComponent(
@@ -45,53 +43,53 @@ export default function ContactTerminal() {
         setIsTransmitted(false);
         setFormData({ senderName: '', email: '', subject: '', message: '' });
       }, 4000);
-    }, 1200);
+    }, 1000);
   };
 
   return (
     <section id="contact" className="relative py-24 border-t border-cyan-500/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
+        {/* Section Header with Simple Subtitle */}
         <div className="flex flex-col items-start mb-12">
           <div className="flex items-center space-x-2 font-mono text-xs text-cyan-400 mb-2">
             <span className="w-2 h-2 rounded-full bg-cyan-400" />
-            <span>09 // UPLINK</span>
+            <span>09 // CONTACT</span>
             <span className="text-slate-600">|</span>
-            <span className="text-purple-400">SECURE QUANTUM TELEMETRY</span>
+            <span className="text-cyan-300">Direct Contact Information & Message Form</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-display font-bold text-white tracking-wide">
             ESTABLISH CONNECTION
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-cyan-400 to-purple-500 rounded mt-3" />
-          <p className="mt-3 text-slate-300 text-sm sm:text-base font-sans max-w-2xl">
-            Open to opportunities in embedded systems, firmware, IoT and hardware engineering.
+          <p className="mt-3 text-slate-200 text-sm sm:text-base font-sans max-w-2xl leading-relaxed">
+            Open to opportunities in embedded systems, firmware, IoT and hardware engineering. Feel free to reach out via email, phone, or by sending a message below.
           </p>
         </div>
 
-        {/* 2-Column Terminal Layout */}
+        {/* 2-Column Contact Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: Direct Hardware Channels */}
+          {/* Left Column: Direct Phone / Email / Location */}
           <div className="lg:col-span-5 space-y-6">
             <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-cyan-500/30 relative">
-              <h3 className="text-xs font-mono uppercase text-cyan-400 tracking-widest mb-6 flex items-center gap-2">
+              <h3 className="text-xs font-mono uppercase text-cyan-400 tracking-wider mb-6 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                DIRECT COMMUNICATION BEACONS
+                DIRECT CONTACT DETAILS
               </h3>
 
               <div className="space-y-4 font-mono text-xs">
                 {/* Email */}
                 <div className="p-3.5 rounded-xl bg-space-900/90 border border-cyan-500/20 flex items-center justify-between group">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300">
+                    <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300">
                       <Mail className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-500">PRIMARY EMAIL</div>
+                      <div className="text-[10px] text-slate-400">EMAIL ADDRESS</div>
                       <a
                         href={`mailto:${contact.email}`}
-                        className="text-white hover:text-cyan-300 transition-colors font-bold"
+                        className="text-white hover:text-cyan-300 transition-colors font-bold text-xs"
                       >
                         {contact.email}
                       </a>
@@ -99,8 +97,8 @@ export default function ContactTerminal() {
                   </div>
                   <button
                     onClick={() => handleCopy(contact.email, 'email')}
-                    title="Copy Email"
-                    className="p-1.5 rounded bg-space-800 text-slate-400 hover:text-cyan-300 hover:border-cyan-400 border border-slate-700"
+                    title="Copy Email Address"
+                    className="p-1.5 rounded bg-space-800 text-slate-300 hover:text-cyan-300 hover:border-cyan-400 border border-slate-700"
                   >
                     {copiedField === 'email' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
@@ -109,14 +107,14 @@ export default function ContactTerminal() {
                 {/* Phone 1 */}
                 <div className="p-3.5 rounded-xl bg-space-900/90 border border-cyan-500/20 flex items-center justify-between group">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300">
+                    <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300">
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-500">VOICE // CELLULAR (PRIMARY)</div>
+                      <div className="text-[10px] text-slate-400">PRIMARY PHONE</div>
                       <a
                         href={`tel:${contact.phones[0]}`}
-                        className="text-white hover:text-cyan-300 transition-colors font-bold"
+                        className="text-white hover:text-cyan-300 transition-colors font-bold text-xs"
                       >
                         {contact.phones[0]}
                       </a>
@@ -124,8 +122,8 @@ export default function ContactTerminal() {
                   </div>
                   <button
                     onClick={() => handleCopy(contact.phones[0], 'phone1')}
-                    title="Copy Phone"
-                    className="p-1.5 rounded bg-space-800 text-slate-400 hover:text-cyan-300 hover:border-cyan-400 border border-slate-700"
+                    title="Copy Phone Number"
+                    className="p-1.5 rounded bg-space-800 text-slate-300 hover:text-cyan-300 hover:border-cyan-400 border border-slate-700"
                   >
                     {copiedField === 'phone1' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
@@ -134,14 +132,14 @@ export default function ContactTerminal() {
                 {/* Phone 2 */}
                 <div className="p-3.5 rounded-xl bg-space-900/90 border border-cyan-500/20 flex items-center justify-between group">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300">
+                    <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300">
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-500">VOICE // SECONDARY LINE</div>
+                      <div className="text-[10px] text-slate-400">SECONDARY PHONE</div>
                       <a
                         href={`tel:${contact.phones[1]}`}
-                        className="text-white hover:text-cyan-300 transition-colors font-bold"
+                        className="text-white hover:text-cyan-300 transition-colors font-bold text-xs"
                       >
                         {contact.phones[1]}
                       </a>
@@ -149,8 +147,8 @@ export default function ContactTerminal() {
                   </div>
                   <button
                     onClick={() => handleCopy(contact.phones[1], 'phone2')}
-                    title="Copy Phone"
-                    className="p-1.5 rounded bg-space-800 text-slate-400 hover:text-cyan-300 hover:border-cyan-400 border border-slate-700"
+                    title="Copy Secondary Phone"
+                    className="p-1.5 rounded bg-space-800 text-slate-300 hover:text-cyan-300 hover:border-cyan-400 border border-slate-700"
                   >
                     {copiedField === 'phone2' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
@@ -158,20 +156,20 @@ export default function ContactTerminal() {
 
                 {/* Location */}
                 <div className="p-3.5 rounded-xl bg-space-900/90 border border-cyan-500/20 flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300 shrink-0">
+                  <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300 shrink-0">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-[10px] text-slate-500">BASE LOCATION</div>
+                    <div className="text-[10px] text-slate-400">CURRENT CITY</div>
                     <div className="text-slate-200 font-bold">{contact.location}</div>
                   </div>
                 </div>
               </div>
 
-              {/* Social Channels / Profile links */}
+              {/* Profiles */}
               <div className="mt-6 pt-4 border-t border-cyan-500/20">
                 <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-3">
-                  EXTERNAL PROFILES & HUBS (EDITABLE PLACEHOLDERS):
+                  ONLINE PROFILES (EDITABLE PLACEHOLDERS):
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <a
@@ -182,7 +180,7 @@ export default function ContactTerminal() {
                   >
                     <Linkedin className="w-3.5 h-3.5" />
                     <span>LINKEDIN</span>
-                    <ExternalLink className="w-3 h-3 text-slate-500" />
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
                   </a>
                   <a
                     href={contact.socials.github}
@@ -192,7 +190,7 @@ export default function ContactTerminal() {
                   >
                     <Github className="w-3.5 h-3.5" />
                     <span>GITHUB</span>
-                    <ExternalLink className="w-3 h-3 text-slate-500" />
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
                   </a>
                 </div>
               </div>
@@ -202,77 +200,73 @@ export default function ContactTerminal() {
             </div>
           </div>
 
-          {/* Right Column: Futuristic Transmission Terminal Form */}
+          {/* Right Column: Message Form with Simple Input Labels */}
           <div className="lg:col-span-7">
             <div className="glass-panel-glow p-6 sm:p-8 rounded-2xl border border-cyan-400/40 relative shadow-neon-cyan">
-              <h3 className="text-xs font-mono uppercase text-cyan-400 tracking-widest mb-6 flex items-center gap-2">
-                <Send className="w-4 h-4 text-cyan-400" />
-                <span>DIRECT DISPATCH TRANSMISSION CONSOLE</span>
+              <h3 className="text-xs font-mono uppercase text-cyan-400 tracking-wider mb-6 flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-cyan-400" />
+                <span>SEND DIRECT MESSAGE</span>
               </h3>
 
               <form onSubmit={handleSubmit} className="space-y-4 font-mono text-xs">
-                {/* Name & Email */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1.5">
-                      ORIGINATOR IDENTITY / NAME:
+                    <label className="block text-[11px] text-slate-300 uppercase tracking-wider mb-1.5 font-semibold">
+                      YOUR NAME:
                     </label>
                     <input
                       type="text"
                       required
                       value={formData.senderName}
                       onChange={(e) => setFormData({ ...formData, senderName: e.target.value })}
-                      placeholder="e.g. Lead Hardware Recruiter"
+                      placeholder="e.g. Recruiter / Hiring Manager"
                       className="w-full px-3.5 py-2.5 rounded-lg bg-space-900/90 border border-cyan-500/30 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 text-white placeholder:text-slate-600 font-mono text-xs"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1.5">
-                      RETURN FREQUENCY / EMAIL:
+                    <label className="block text-[11px] text-slate-300 uppercase tracking-wider mb-1.5 font-semibold">
+                      YOUR EMAIL:
                     </label>
                     <input
                       type="email"
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="recruiter@company.com"
+                      placeholder="name@company.com"
                       className="w-full px-3.5 py-2.5 rounded-lg bg-space-900/90 border border-cyan-500/30 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 text-white placeholder:text-slate-600 font-mono text-xs"
                     />
                   </div>
                 </div>
 
-                {/* Subject */}
                 <div>
-                  <label className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1.5">
-                    TRANSMISSION VECTOR / SUBJECT:
+                  <label className="block text-[11px] text-slate-300 uppercase tracking-wider mb-1.5 font-semibold">
+                    SUBJECT:
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    placeholder="Embedded Firmware / IoT Engineer Position"
+                    placeholder="Embedded Firmware / IoT Engineer Role"
                     className="w-full px-3.5 py-2.5 rounded-lg bg-space-900/90 border border-cyan-500/30 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 text-white placeholder:text-slate-600 font-mono text-xs"
                   />
                 </div>
 
-                {/* Message */}
                 <div>
-                  <label className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1.5">
-                    TRANSMISSION PAYLOAD / MESSAGE:
+                  <label className="block text-[11px] text-slate-300 uppercase tracking-wider mb-1.5 font-semibold">
+                    YOUR MESSAGE:
                   </label>
                   <textarea
                     rows={5}
                     required
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Hello Shafiq, we reviewed your embedded engineering portfolio and would like to discuss..."
+                    placeholder="Hello Shafiq, I reviewed your embedded portfolio and would like to invite you for an interview..."
                     className="w-full px-3.5 py-2.5 rounded-lg bg-space-900/90 border border-cyan-500/30 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 text-white placeholder:text-slate-600 font-mono text-xs resize-none"
                   />
                 </div>
 
-                {/* Submit Button */}
                 <div className="pt-2">
                   <button
                     type="submit"
@@ -288,12 +282,12 @@ export default function ContactTerminal() {
                     {isTransmitted ? (
                       <>
                         <CheckCircle2 className="w-4 h-4" />
-                        <span>TRANSMISSION DISPATCHED // OPENING MAIL CLIENT</span>
+                        <span>MESSAGE PREPARED // OPENING MAIL CLIENT</span>
                       </>
                     ) : isTransmitting ? (
                       <>
                         <div className="w-4 h-4 border-2 border-space-950 border-t-transparent rounded-full animate-spin" />
-                        <span>ENCRYPTING & DISPATCHING PACKET...</span>
+                        <span>PREPARING TRANSMISSION...</span>
                       </>
                     ) : (
                       <>

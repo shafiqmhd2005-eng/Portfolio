@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Cpu, Terminal, Radio, Wrench, Wifi, Layers, Info } from 'lucide-react';
+import { Cpu, Terminal, Radio, Wrench, Wifi, Layers } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 import { sound } from '../utils/audio';
 
 const categoryIcons = {
-  Programming: Terminal,
-  'Communication Protocols': Radio,
-  'Microcontrollers / Platforms': Cpu,
-  'Engineering Tools': Wrench,
-  'IoT Platforms': Wifi,
+  'Programming Languages': Terminal,
+  'Hardware Communication': Radio,
+  'Microcontroller Chips': Cpu,
+  'Engineering Software': Wrench,
+  'IoT & Cloud Dashboards': Wifi,
   'Core Electronics': Layers,
 };
 
@@ -26,18 +26,21 @@ export default function SkillsSection() {
     <section id="skills" className="relative py-24 border-t border-cyan-500/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
-        <div className="flex flex-col items-start mb-10">
+        {/* Section Header with Simple Subtitle */}
+        <div className="flex flex-col items-start mb-8">
           <div className="flex items-center space-x-2 font-mono text-xs text-cyan-400 mb-2">
             <span className="w-2 h-2 rounded-full bg-cyan-400" />
-            <span>03 // MATRIX</span>
+            <span>03 // SKILLS</span>
             <span className="text-slate-600">|</span>
-            <span className="text-purple-400">{resumeData.skills.subtitle}</span>
+            <span className="text-cyan-300">{resumeData.skills.subtitle}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-display font-bold text-white tracking-wide">
             {resumeData.skills.title}
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-cyan-400 to-purple-500 rounded mt-3" />
+          <p className="text-slate-300 text-sm mt-3 font-sans max-w-xl">
+            Here are the microcontrollers, tools, circuit design software, and communication protocols I work with.
+          </p>
         </div>
 
         {/* Category Filters */}
@@ -53,7 +56,7 @@ export default function SkillsSection() {
                 : 'glass-panel text-slate-400 hover:text-slate-200 border-cyan-500/20'
             }`}
           >
-            ALL CAPABILITIES
+            SHOW ALL SKILLS
           </button>
           {categories.map((cat) => (
             <button
@@ -73,20 +76,20 @@ export default function SkillsSection() {
           ))}
         </div>
 
-        {/* Holographic Category Grid */}
+        {/* Category Grid */}
         <div className="space-y-10">
           {filteredCategories.map((group) => {
             const Icon = categoryIcons[group.category] || Cpu;
             return (
               <div key={group.category} className="space-y-4">
                 
-                {/* Category Header Bar */}
+                {/* Category Header */}
                 <div className="flex items-center justify-between pb-2 border-b border-cyan-500/20 font-mono text-xs">
                   <div className="flex items-center space-x-2 text-cyan-300">
                     <Icon className="w-4 h-4 text-cyan-400" />
                     <span className="font-bold tracking-wider">{group.category}</span>
                   </div>
-                  <span className="text-[10px] text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded">
+                  <span className="text-[10px] text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded">
                     {group.badge}
                   </span>
                 </div>
@@ -112,30 +115,29 @@ export default function SkillsSection() {
                         <div>
                           {/* Module Header */}
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-mono text-cyan-400 font-bold tracking-wider">
+                            <span className="text-sm font-mono text-cyan-400 font-bold tracking-wider">
                               {skill.name}
                             </span>
-                            <span className="text-[9px] font-mono text-slate-400 bg-space-900 px-1.5 py-0.5 rounded border border-slate-700">
+                            <span className="text-[9px] font-mono text-slate-300 bg-space-900 px-1.5 py-0.5 rounded border border-slate-700">
                               {skill.tag}
                             </span>
                           </div>
 
-                          {/* Technical Explanation (always visible, expanded on hover) */}
+                          {/* Plain English Explanation */}
                           <p className="text-xs text-slate-300 leading-relaxed font-sans">
                             {skill.description}
                           </p>
                         </div>
 
-                        {/* Module Status Footer */}
-                        <div className="mt-4 pt-2 border-t border-cyan-500/10 flex items-center justify-between text-[10px] font-mono text-slate-500">
-                          <span className="flex items-center gap-1">
+                        {/* Status Footer */}
+                        <div className="mt-4 pt-2 border-t border-cyan-500/10 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                          <span className="flex items-center gap-1 text-cyan-300">
                             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                            MODULE LOADED
+                            Active Skill
                           </span>
-                          <span className="text-slate-400">HARDWARE READY</span>
+                          <span className="text-slate-400">Hands-on Experience</span>
                         </div>
 
-                        {/* Interactive circuit corner on hover */}
                         {isHovered && (
                           <>
                             <div className="hud-corner-tl" />
