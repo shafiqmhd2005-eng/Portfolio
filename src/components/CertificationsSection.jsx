@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Cpu, Network, Award, FileCheck, CheckCircle } from 'lucide-react';
+import { ShieldCheck, Cpu, Network, Award, FileCheck, CheckCircle, ExternalLink } from 'lucide-react';
 import { resumeData } from '../data/resumeData';
 import { sound } from '../utils/audio';
 
@@ -31,7 +31,7 @@ export default function CertificationsSection() {
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-cyan-400 to-purple-500 rounded mt-3" />
           <p className="text-slate-300 text-sm mt-3 font-sans max-w-xl">
-            Official training credentials completed through ANCIT Edutech, Cisco, IBM, Microsoft, and Naan Mudhalvan.
+            Official training credentials completed through Cisco Networking Academy, Codec Technologies, and ANCIT Edutech (Naan Mudhalvan).
           </p>
         </div>
 
@@ -61,7 +61,7 @@ export default function CertificationsSection() {
                   </h3>
 
                   <div className="text-xs font-mono text-cyan-300 mb-2 font-semibold">
-                    {cert.issuer}
+                    {cert.issuer}{cert.date && <span className="text-slate-400"> • {cert.date}</span>}
                   </div>
 
                   {/* Simple Explanation */}
@@ -75,7 +75,19 @@ export default function CertificationsSection() {
                   <span className="flex items-center gap-1 text-emerald-400 font-bold">
                     <CheckCircle className="w-3.5 h-3.5" /> Verified Completion
                   </span>
-                  <span className="text-slate-400">Official Certificate</span>
+                  {cert.certificateUrl ? (
+                    <a
+                      href={cert.certificateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => sound.click()}
+                      className="flex items-center gap-1 text-cyan-300 hover:text-cyan-100 font-bold transition-colors"
+                    >
+                      View Certificate <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <span className="text-slate-400">Official Certificate</span>
+                  )}
                 </div>
 
                 <div className="hud-corner-tl" />

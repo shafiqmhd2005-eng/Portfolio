@@ -11,8 +11,8 @@ export const resumeData = {
     status: "SYSTEM ONLINE",
     availability: "Available for Full-time Roles in Embedded Systems & IoT",
     socials: {
-      github: "https://github.com/MohamedShafiqM",
-      linkedin: "https://linkedin.com/in/mohamed-shafiq-m",
+      github: "https://github.com/shafiqmhd2005-eng",
+      linkedin: "https://www.linkedin.com/in/mohamed-shafiq-m-642589289/",
     },
     telemetry: {
       mcu: "READY",
@@ -31,7 +31,8 @@ export const resumeData = {
   about: {
     title: "ABOUT ME",
     subtitle: "Who I Am & What I Can Do",
-    bio: "Mohamed Shafiq M is a fresh Electronics and Communication Engineering graduate with hands-on experience in Embedded C/C++, microcontroller programming, sensor interfacing, digital and analog electronics. He has experience with ESP32, Arduino, UART, SPI, I2C, GPIO, KiCad and Proteus. He completed internships covering hardware design, embedded firmware, IoT systems, PCB design, circuit simulation, and hardware/software integration.",
+    bio: "Electronics and Communication Engineering graduate with three internships in embedded firmware, IoT, and hardware design. Skilled in Embedded C/C++, microcontroller programming (ESP32, Arduino, ATmega328P), sensor interfacing, and UART, SPI, I2C, and GPIO communication. Experienced in PCB design with KiCad, circuit simulation and validation with Proteus, and reading schematics and datasheets. Seeking an entry-level Junior Embedded Engineer role to build, test, and debug real-world embedded hardware.",
+    languages: ["Tamil", "English"],
     simpleExplanation: "In simple words: I design electronic circuits on computers, build printed circuit boards (PCBs), write the code that runs inside microchip brains (like ESP32 and Arduino), connect sensors to measure things, and send that data to mobile apps and cloud websites over Wi-Fi.",
     domains: [
       {
@@ -156,9 +157,35 @@ export const resumeData = {
             description: "A modern, powerful code editor for writing clean C/C++ programs and managing project files."
           },
           {
+            name: "Git",
+            tag: "VERSION CONTROL",
+            description: "Tracks every change to firmware and project files so work can be reviewed, compared, and safely rolled back."
+          },
+          {
+            name: "GitHub",
+            tag: "CODE HOSTING",
+            description: "An online platform for storing, sharing, and collaborating on code repositories."
+          },
+          {
             name: "LabVIEW",
             tag: "GRAPHICAL TESTING",
             description: "A visual programming environment from National Instruments for automated measurements, graphs, and hardware testing."
+          }
+        ]
+      },
+      {
+        category: "Operating Systems",
+        badge: "COMPUTER PLATFORMS",
+        items: [
+          {
+            name: "Linux (Ubuntu)",
+            tag: "OPEN-SOURCE OS",
+            description: "A developer-friendly operating system used for embedded toolchains, terminal work, and scripting."
+          },
+          {
+            name: "Windows",
+            tag: "DESKTOP OS",
+            description: "The everyday desktop environment used for design tools like KiCad, Proteus, and LabVIEW."
           }
         ]
       },
@@ -225,9 +252,9 @@ export const resumeData = {
         simpleSummary: "Designed printed circuit boards (PCBs) and wrote microchip programs for automation.",
         highlights: [
           "Developed microcontroller-based applications in C/C++ for hardware control and embedded automation.",
-          "Performed hardware/software integration and prototype testing using Arduino IDE.",
-          "Designed PCB layouts using KiCad.",
-          "Conducted circuit simulation, debugging and functional validation using Proteus."
+          "Performed hardware-software integration and prototype testing using Arduino IDE.",
+          "Designed professional PCB layouts in KiCad for real-world circuit implementation.",
+          "Conducted circuit simulation, debugging, and functional validation using Proteus."
         ],
         technologies: ["C/C++", "KiCad", "Proteus", "Arduino IDE", "Microcontrollers", "PCB Layout"]
       },
@@ -239,25 +266,23 @@ export const resumeData = {
         badge: "SMART CONNECTED DEVICES",
         simpleSummary: "Connected ESP32 microchips to Wi-Fi to send real-time sensor data to cloud dashboards.",
         highlights: [
-          "Built IoT applications using ESP32.",
-          "Implemented wireless data acquisition.",
-          "Integrated Blynk and ThingSpeak.",
-          "Developed real-time sensor monitoring and data visualization.",
-          "Implemented multi-sensor interfacing and cloud communication."
+          "Built IoT applications using ESP32 for wireless data acquisition and cloud-based remote control.",
+          "Integrated Blynk and ThingSpeak for real-time sensor monitoring and data visualization.",
+          "Implemented multi-sensor interfacing and cloud communication for live telemetry."
         ],
         technologies: ["ESP32", "Blynk", "ThingSpeak", "Wi-Fi", "Sensor Interfacing", "Data Visualization"]
       },
       {
         role: "EMBEDDED SYSTEMS INTERN",
-        company: "Srishti Innovative — Technopark",
+        company: "Srishti Innovative (Technopark)",
         period: "Jul 2024 – Aug 2024",
         status: "COMPLETED",
         badge: "EMBEDDED BASICS & SENSORS",
         simpleSummary: "Programmed Arduino microcontrollers and tested electronic sensor circuits in Proteus.",
         highlights: [
-          "Worked with Arduino and C/C++.",
-          "Implemented sensor interfacing with analog and digital components.",
-          "Simulated, tested and validated embedded circuits using Proteus."
+          "Gained hands-on exposure to embedded systems development using Arduino and C/C++.",
+          "Worked on real-time sensor interfacing with analog and digital components.",
+          "Simulated, tested, and validated embedded circuits using Proteus for design verification."
         ],
         technologies: ["Arduino", "C/C++", "Analog & Digital Sensors", "Proteus", "Circuit Validation"]
       }
@@ -397,42 +422,40 @@ export const resumeData = {
     items: [
       {
         id: "cert-01",
+        name: "Operating Systems Basics",
+        issuer: "Cisco Networking Academy",
+        date: "13 Oct 2026",
+        certificateUrl: "certificates/cisco-operating-systems-basics.pdf",
+        domain: "Operating Systems Fundamentals",
+        simpleDesc: "How operating systems manage processes, memory, files, and hardware",
+        icon: "Network"
+      },
+      {
+        id: "cert-02",
+        name: "Digital Electronics & VLSI Intern",
+        issuer: "Codec Technologies Pvt. Ltd.",
+        date: "30 Oct – 30 Nov 2025",
+        certificateUrl: "certificates/codec-digital-electronics-vlsi-internship.pdf",
+        domain: "Digital Electronics & VLSI Design",
+        simpleDesc: "Digital logic design and chip-level (VLSI) design fundamentals",
+        icon: "Cpu"
+      },
+      {
+        id: "cert-03",
         name: "ADAS Advanced Level – 2",
-        issuer: "ANCIT Edutech / Naan Mudhalvan",
+        issuer: "ANCIT Edutech (Naan Mudhalvan)",
+        date: "Nov 2025",
         domain: "Automotive Electronics & Smart Vehicle Safety",
         simpleDesc: "Advanced Driver Assistance Systems & automotive smart sensors",
         icon: "ShieldAlert"
       },
       {
-        id: "cert-02",
+        id: "cert-04",
         name: "ADAS ECU Simulation and Testing",
-        issuer: "ANCIT Edutech / Naan Mudhalvan",
+        issuer: "ANCIT Edutech (Naan Mudhalvan)",
+        date: "Oct 2025",
         domain: "Vehicle Electronic Control Unit Testing",
         simpleDesc: "Testing virtual car control computers and validating vehicle software",
-        icon: "Cpu"
-      },
-      {
-        id: "cert-03",
-        name: "Network Essentials",
-        issuer: "Cisco / Naan Mudhalvan",
-        domain: "Computer Networking & IP Connections",
-        simpleDesc: "Understanding how computers and IoT devices connect over networks",
-        icon: "Network"
-      },
-      {
-        id: "cert-04",
-        name: "Experience-Based Project Learning",
-        issuer: "IBM / Naan Mudhalvan",
-        domain: "Practical Project Development & Engineering",
-        simpleDesc: "Working on structured technical projects following industry methods",
-        icon: "Award"
-      },
-      {
-        id: "cert-05",
-        name: "Microsoft Office Essentials",
-        issuer: "Microsoft / Naan Mudhalvan",
-        domain: "Documentation & Technical Reports",
-        simpleDesc: "Creating professional engineering reports, spreadsheets, and slides",
         icon: "FileCheck"
       }
     ]
