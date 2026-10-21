@@ -169,7 +169,12 @@ export default function ResumeModal({ isOpen, onClose }) {
               {resumeData.certifications.items.map((cert) => (
                 <div key={cert.id} className="p-2 rounded bg-space-900/60 border border-slate-800">
                   <div className="font-bold text-slate-200">{cert.name}</div>
-                  <div className="text-[11px] text-cyan-400 font-mono">{cert.issuer}</div>
+                  <div className="text-[11px] text-cyan-400 font-mono">{cert.issuer}{cert.date && ` • ${cert.date}`}</div>
+                  {cert.certificateUrl && (
+                    <a href={cert.certificateUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-cyan-300 hover:text-cyan-100 underline">
+                      View Certificate
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -191,6 +196,14 @@ export default function ResumeModal({ isOpen, onClose }) {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Languages */}
+          <div>
+            <h2 className="text-xs font-mono tracking-widest text-cyan-400 uppercase font-bold mb-2">
+              LANGUAGES
+            </h2>
+            <p className="text-xs text-slate-300">{resumeData.about.languages.join(', ')}</p>
           </div>
         </div>
 
