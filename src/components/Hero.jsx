@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Download, Activity, Cpu, Wifi, Layers, Terminal } from 'lucide-react';
-import Hero3D from './Hero3D';
+import VoiceAssistant3D from './VoiceAssistant3D';
 import { resumeData } from '../data/resumeData';
 import { sound } from '../utils/audio';
 
@@ -146,17 +146,17 @@ export default function Hero({ onOpenResume, onOpenTerminal }) {
               <div className="flex items-center justify-between px-3 py-2 border-b border-cyan-500/20 font-mono text-[11px] text-slate-400">
                 <div className="flex items-center space-x-2">
                   <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                  <span className="text-cyan-300 font-bold">INTERACTIVE 3D SATELLITE MODEL</span>
+                  <span className="text-cyan-300 font-bold">INTERACTIVE 3D AI VOICE ASSISTANT</span>
                 </div>
                 <span className="text-slate-400 hidden sm:inline">Orbiting at 60 FPS</span>
               </div>
 
               {/* Enhanced 3D Canvas */}
-              <Hero3D />
+              <VoiceAssistant3D />
 
               {/* Bottom Simple Note */}
               <div className="px-3 py-2 border-t border-cyan-500/15 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                <span>🛰️ Demonstrates Embedded Systems in Aerospace & IoT</span>
+                <span>🎙️ ESP32 · INMP441 Mic · MAX98357A Amp · SH1106 OLED</span>
                 <button
                   onClick={() => {
                     sound.click();

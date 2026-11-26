@@ -398,6 +398,87 @@ export const resumeData = {
           "Tested display under high speed and slow motion to confirm zero ghosting."
         ]
       }
+    },
+    {
+      id: "project-04",
+      code: "PROJECT 04 // LATEST BUILD",
+      title: "AI Voice Assistant (XiaoZhi ESP32)",
+      simpleTitle: "Pocket-Sized Talking AI Speaker Built on an ESP32",
+      shortDescription: "A hand-built ESP32 voice assistant with an I²S microphone, I²S amplifier and speaker, and an SH1106 OLED face, running XiaoZhi firmware compiled from source with ESP-IDF v6.1.",
+      simpleExplanation: "A small smart speaker I built myself. A digital microphone listens to your voice, the ESP32 sends it over Wi-Fi to an AI service, and the reply is played back through an amplifier and speaker while the little OLED screen shows what the assistant is doing.",
+      tag: "AI + EMBEDDED AUDIO",
+      technologies: ["ESP32 DevKit", "ESP-IDF v6.1", "XiaoZhi Firmware", "INMP441 I²S Mic", "MAX98357A I²S Amp", "SH1106 OLED (I²C)", "Wi-Fi", "C / C++"],
+      productImage: "/projects/voice-assistant/product.jpg",
+      circuitDiagram: "/projects/voice-assistant/circuit-diagram.svg",
+      reportUrl: "/projects/voice-assistant/AI_Voice_Assistant_Project_Report.docx",
+      architectureSteps: [
+        { label: "1. INMP441 Mic", desc: "Picks up your voice as a digital I²S audio stream." },
+        { label: "2. ESP32 Brain", desc: "Captures audio, runs the XiaoZhi firmware and manages Wi-Fi." },
+        { label: "3. AI Service", desc: "Voice is sent over Wi-Fi to the assistant service for a reply." },
+        { label: "4. MAX98357A + Speaker", desc: "The ESP32 streams the reply as I²S audio to the amp and speaker." },
+        { label: "5. SH1106 OLED", desc: "Shows status, setup info and the assistant's face over I²C." }
+      ],
+      pinout: [
+        { module: "SH1106 OLED (I²C)", pins: "VCC → 3.3V · GND → GND · SDA → GPIO4 · SCL → GPIO15" },
+        { module: "INMP441 Microphone (I²S)", pins: "VDD → 3.3V · GND → GND · SD → GPIO32 · SCK → GPIO26 · WS → GPIO25 · L/R → GND" },
+        { module: "MAX98357A Amplifier (I²S)", pins: "VIN → 3.3V · GND → GND · LRC → GPIO33 · DIN → GPIO27 · BCLK → GPIO14 · GAIN: NC" },
+        { module: "Speaker", pins: "SPK+ / SPK− → amplifier output only" },
+        { module: "Status LED", pins: "GPIO18 → 220 Ω → LED → GND" },
+        { module: "Wake Button", pins: "GPIO19 (ASR button in Bread Compact board config)" }
+      ],
+      report: {
+        date: "26 November 2026",
+        summary: "I built and compiled the XiaoZhi ESP32 voice-assistant firmware from source, then repaired a display-driver mismatch that left my SH1106 OLED showing a bright, noisy pattern. The menu let me select SH1106, but the Bread Compact board source still initialised the SSD1306 driver. I corrected the board initialisation to pick the SH1106 driver, rebuilt, flashed the ESP32 — and the display worked.",
+        keyFix: "Selecting SH1106 in menuconfig changed the configuration but not the board file's driver call. In esp32_bread_board.cc the display setup still called esp_lcd_new_panel_ssd1306. I updated it to call esp_lcd_new_panel_sh1106 when CONFIG_OLED_SH1106_128X64 is enabled, keeping the SSD1306 path for SSD1306 builds.",
+        lesson: "Verify what the compiled board code actually does — not only what a configuration screen says. Reading the source and the boot logs connected the noisy screen to the real cause.",
+        status: [
+          { check: "ESP-IDF v6.1 setup", evidence: "Installed with Espressif Installation Manager; IDF PowerShell environment active.", state: "Complete" },
+          { check: "Firmware build", evidence: "xiaozhi.bin generated (~0x1F8EC0 bytes), ~33% app partition free.", state: "Complete" },
+          { check: "ESP32 connection", evidence: "Detected on COM3 by IDF monitor, boot logs captured.", state: "Verified" },
+          { check: "SH1106 OLED display", evidence: "Working after the conditional SH1106 driver fix.", state: "Working" },
+          { check: "Wi-Fi setup portal", evidence: "Config AP at 192.168.4.1 reported “Configuration successful”.", state: "Setup submitted" },
+          { check: "Microphone & speaker", evidence: "No end-to-end voice test recorded yet; amplifier wiring to be confirmed.", state: "Needs validation" },
+          { check: "Wake button (GPIO19)", evidence: "Initialised in board source; no wake response observed yet.", state: "In progress" }
+        ],
+        troubleshooting: [
+          { problem: "No serial port appeared", fix: "Installed the CP210x USB-serial driver — board appeared on COM3." },
+          { problem: "ESP-IDF installer rejected its path", fix: "Chose a clean custom path (C:\\Espressif\\idf-v6.1)." },
+          { problem: "idf.py was not recognised", fix: "Switched to the dedicated ESP-IDF PowerShell, which activates the toolchain." },
+          { problem: "OLED showed bright speckles", fix: "Boot logs revealed the SSD1306 driver — patched the board source to use SH1106." },
+          { problem: "SH1106 dependency 'already exists'", fix: "Kept the existing manifest entry instead of adding a duplicate." },
+          { problem: "Hex-literal build warnings", fix: "Confirmed they were notices only; the image built and flashed fine." }
+        ],
+        nextSteps: [
+          "Confirm the ESP32 joins Wi-Fi and complete device binding with the XiaoZhi service.",
+          "Test microphone and speaker separately, then a full two-way conversation.",
+          "Add a debug log to the GPIO19 button callback to verify wake-button detection.",
+          "Explore internet music playback as a future feature."
+        ]
+      },
+      details: {
+        objective: "Build a working, self-contained AI voice assistant from bare modules — compile the open-source XiaoZhi firmware from source for my exact board and display, assemble the hardware on perfboard, and debug it to a working state.",
+        hardware: [
+          "ESP32 DevKit (30-pin, ESP32-WROOM) — the main controller with built-in Wi-Fi",
+          "INMP441 I²S MEMS microphone — captures voice as digital audio",
+          "MAX98357A I²S class-D amplifier — drives the speaker directly from digital audio",
+          "Full-range speaker driver",
+          "SH1106 128×64 I²C OLED — status display and assistant face",
+          "Status LED (GPIO18) and tactile wake button (GPIO19)",
+          "Hand-soldered perfboard inside a textured black enclosure"
+        ],
+        firmware: [
+          "XiaoZhi ESP32 firmware built from source, pinned to a specific upstream commit.",
+          "Configured with idf.py menuconfig for the Bread Compact ESP32 board and SH1106 128×64 display.",
+          "Patched esp32_bread_board.cc to call the SH1106 panel driver when SH1106 is selected.",
+          "Built with idf.py build, flashed over COM3 at 460800 baud, debugged with idf.py monitor."
+        ],
+        testing: [
+          "Verified ESP32 detection and boot logs through the serial monitor at 115200 baud.",
+          "Confirmed the OLED displayed correctly after the SH1106 driver fix.",
+          "Verified the Wi-Fi setup access point and configuration page at 192.168.4.1.",
+          "Microphone, speaker and wake-button end-to-end tests are the next validation step."
+        ]
+      }
     }
   ],
 
