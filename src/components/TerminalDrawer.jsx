@@ -88,7 +88,8 @@ STATEMENT: "${resumeData.personal.statement}"`
 [PRJ-01] IoT-Enabled Digital Twin for Real-Time Cardiovascular Disease Monitoring
          (ESP32, MAX30102, AD8232, DS18B20, BME280)
 [PRJ-02] Automatic Dual-Axis Solar Tracker (Arduino, 4x LDR, Dual Servo)
-[PRJ-03] Seven-Segment Display Digital Clock (Arduino, POV Multiplexing)`
+[PRJ-03] Seven-Segment Display Digital Clock (Arduino, POV Multiplexing)
+[PRJ-04] AI Voice Assistant (ESP32, INMP441 Mic, MAX98357A Amp, SH1106 OLED, ESP-IDF)`
         });
         break;
 
